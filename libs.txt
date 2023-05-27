@@ -1,0 +1,4 @@
+django==4.2.1
+requests==2.31.0
+beautifulsoup4==4.12.2
+scikit-learn==1.2.2
