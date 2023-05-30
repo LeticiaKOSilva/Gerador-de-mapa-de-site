@@ -2,12 +2,10 @@ from tokenize import String
 import requests
 from bs4 import BeautifulSoup
 from django.http import JsonResponse, HttpRequest
-
+from .models import Link
 ##
 #
-def get_links(request: HttpRequest): #
-    # Obtém a URL fornecida pelo usuário nos parâmetros da requisição
-    url = request.GET.get('url')  
+def get_links(url): #
 
     url = standardize_url(url)
 
@@ -18,9 +16,9 @@ def get_links(request: HttpRequest): #
     links = create_links_list(url, BeautifulSoup(response.content, 'html.parser'))
     
     if not links: 
-        return JsonResponse({'error' : 'Nenhum link encontrado'}, status=404)
+        return None
     
-    return JsonResponse(links, safe=False, status=200)
+    return links
 # get_links()
 
 
@@ -42,10 +40,9 @@ def create_links_list(url: String, soup: BeautifulSoup): #
         link_href = link_tag.get('href')
         
         if link_href:
-            links.append({
-                'nome': link_tag.text,
-                'url': treatLink(url, link_href)
-            })
+            links.append(
+                Link(link_tag.text,treatLink(url,link_href))
+            )
 
     return links
 #
@@ -70,4 +67,11 @@ def treatLink(url_page: String, link: String): #
     
     return link
 #
+
+def extract_urls(links):
+    urls = []
+    for link in links:
+        urls.append(link.url)
+    return urls
+
 
