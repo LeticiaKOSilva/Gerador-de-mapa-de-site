@@ -7,17 +7,21 @@ from .models import Link
 #
 def get_links(url): #
 
+    # Padroniza a URL.
     url = standardize_url(url)
 
-    # Realiza o web scraping da página
+    # Cria a requisição.
     response = create_request(url)
 
-    # Extrai os links da página
+    if not response: 
+        return None
+
+    # Extrai os links da página.
     links = create_links_list(url, BeautifulSoup(response.content, 'html.parser'))
-    
+
     if not links: 
         return None
-    
+
     return links
 # get_links()
 
@@ -30,6 +34,8 @@ def create_request(url, ssl_cert=True): #
         return requests.get(url)
     except (requests.exceptions.SSLError):
         return requests.get(url, verify=False)
+    except (requests.exceptions.ConnectionError): # Tratamento caso a página não exista.
+        return None
 #
 
 
@@ -73,5 +79,3 @@ def extract_urls(links):
     for link in links:
         urls.append(link.url)
     return urls
-
-

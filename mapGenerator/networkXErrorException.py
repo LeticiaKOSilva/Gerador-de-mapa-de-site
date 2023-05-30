@@ -1,0 +1,2 @@
+class NetworkXError(Exception):
+    pass

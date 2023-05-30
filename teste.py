@@ -1,6 +1,9 @@
 from mapGenerator.views import get_links
-from mapGenerator.clusterization import clusterize
-linksList = get_links('youtube.com')
+#from mapGenerator.clusterization import clusterize
+linksList = get_links('facebook.com')
 
-clusterize(linksList)
+for link in linksList:
+    print(link)
+
+#clusterize(linksList)
 
