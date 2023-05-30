@@ -6,7 +6,6 @@ from .models import Link
 ##
 #
 def get_links(url): #
-
     # Padroniza a URL.
     url = standardize_url(url)
 
@@ -24,7 +23,6 @@ def get_links(url): #
 
     return links
 # get_links()
-
 
 # Cria uma requisição e retorna a resposta.
 # Tenta criar uma requisição efetuando a verificação dos certificados SSL, 
