@@ -1,5 +1,5 @@
 from mapGenerator.teste_pag_rank import *
-from mapGenerator.views import *
+from mapGenerator.link_functions import *
 import networkx as nx
 
 class Rank:

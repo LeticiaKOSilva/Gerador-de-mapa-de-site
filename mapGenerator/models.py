@@ -1,10 +1,19 @@
 ## Representa um Link (Endereço Web).
 class Link:
+    """
+    Representa um Link (Endereço Web).
 
+    ...
 
-    def __init__(self, title,url):
+    Atributos
+    ---------
+ 
+
+    """
+    def __init__(self,title,url,conteudo):
         self.title = title
         self.url = url
+        self.conteudo = conteudo
 
     def __str__(self):
-        return f'{self.title} = {self.url}'
+        return f'\n{self.title} = {self.url}\n{self.conteudo}\n'

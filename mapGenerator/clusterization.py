@@ -1,18 +1,20 @@
-import requests
-from bs4 import BeautifulSoup
+
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import normalize
-from .views import extract_urls
+from .link_functions import extract_urls
+from .text_html_functions import *
+
 
 def clusterize(links):
-    links = extract_urls(links)
+#
+    urls = extract_urls(links)
+    contents = [f'{link.url} {normalize_content_for_cluterize(link.conteudo)}' for link in links]
     # Pré-processamento dos links (remoção de prefixos, etc.)
-    processed_links = [link.replace("https://www.ted.com/", "") for link in links]
 
     # Representação dos dados usando TF-IDF
     vectorizer = TfidfVectorizer()
-    X = vectorizer.fit_transform(processed_links)
+    X = vectorizer.fit_transform(contents)
 
     # Normalização dos vetores de recurso
     X = normalize(X)
@@ -30,8 +32,7 @@ def clusterize(links):
 
     # Agrupando os links em seus respectivos tópicos
     for i, link in enumerate(links):
-        topics[labels[i]].append(link)
-        print("obtido = ",link)
+        topics[labels[i]].append(link.title)
 
     # Imprimindo os links por tópicos
     for topic, links in topics.items():
@@ -39,3 +40,14 @@ def clusterize(links):
         for link in links:
             print(link)
         print()
+
+def normalize_content_for_cluterize(content: str):
+    soup = BeautifulSoup(content,"html.parser")
+
+    title_tags = get_title_tags(soup)
+    
+    normalized_text = " "
+
+    normalized_text.join(title_tags)
+
+    return normalized_text
