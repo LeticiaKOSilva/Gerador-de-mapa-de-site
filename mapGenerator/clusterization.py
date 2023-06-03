@@ -49,5 +49,7 @@ def normalize_content_for_cluterize(content: str):
     normalized_text = " "
 
     normalized_text.join(title_tags)
+    if(normalized_text == " "):
+        return ""
 
     return normalized_text
