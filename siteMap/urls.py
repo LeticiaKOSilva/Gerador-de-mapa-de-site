@@ -21,6 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('mapGenerator.urls',namespace='mapGenerator')),
     path('mapGenerator/',include('mapGenerator.urls',namespace='mapGenerator')),
+    path('homePage/',include('homePage.urls',namespace='homePage')),
 
 
 ]
