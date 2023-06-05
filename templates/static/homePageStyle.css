@@ -1,3 +1,74 @@
-.p{
-    color: blue;
+* {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+}
+
+body {
+    height: 5000px;
+    min-width: 300px;
+}
+
+main {
+    padding-top: 80px;
+}
+
+.navbar {
+    background-color: #2a77eb;
+}
+
+.navbar-brand img {
+    height: 3vw;
+}
+
+.dropdown-item:hover, .detail-link:hover {
+    background-color: #5f99f0 !important;
+}
+
+.title-logo {
+    font-family: 'Raleway', sans-serif;
+    font-size: 140% !important;
+    text-decoration: underline;
+}
+
+.btn-primary {
+    background-color: #2a77eb !important;
+    border-color: #2a77eb !important;
+}
+
+.display-none {
+    display: none;
+}
+
+.img_banner {
+    width: 100%;
+}
+
+.content-links {
+    width: 150px;
+}
+
+#search-btn {
+    font-size: 0%;
+}
+
+#search-btn:hover, #search-btn:active {
+    background-color: #4C4C4C !important;
+    color: #FFF !important;
+}
+
+@media screen and (max-width: 991px) {
+    #sub-navbar #subNavbarSupportedContent {
+        display: none !important;
+    }
+
+    main {
+        padding-top: 120px;
+    }
+}
+
+@media screen and (max-width: 300px) {
+    main {
+        padding-top: 100px;
+    }
 }
