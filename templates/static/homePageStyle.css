@@ -72,3 +72,10 @@ main {
         padding-top: 100px;
     }
 }
+
+div#img {
+    background-color: #4C4C4C;
+    width: 20%;
+    height: 30vh;
+    margin: 10px;
+}
