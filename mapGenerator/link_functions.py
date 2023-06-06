@@ -45,12 +45,14 @@ def create_links_list(url: String, soup: BeautifulSoup): #
     links = []
     for link_tag in soup.find_all('a'):
         link_href = link_tag.get('href')
-        treated_link = treatLink(url,link_href)
-        print(f'\n{link_tag.text}')
-        if link_href:
-            links.append(
-                Link(link_tag.text,treated_link,get_content(treated_link))
-            )
+        
+        if(link_href):
+            treated_link = treatLink(url,link_href)
+       
+            if link_href:
+                links.append(
+                   Link(link_tag.text,treated_link,get_content(treated_link))
+                )
       
     return links
 #
@@ -90,3 +92,12 @@ def get_content(url: String):
     if(response == None):
         return ""
     return response.text
+
+def remove_url_prefix(url: str):
+    """
+    Remove a parte inicial de uma url e retorna a url sem esse inicio ou string vazia caso não consiga realizar o split
+    Ex: url = https://github.com/login/, return url = login/
+    
+    """
+    parts = url.split('.com')
+    return parts[1] if len(parts) > 1 else ""
