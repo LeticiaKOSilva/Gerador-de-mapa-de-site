@@ -6,7 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador-de-mapa-de-site</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous"/>
-    <link rel="shortcut icon" href="./logoIF.png" type="image/x-icon">
+    <link id="favicon" rel="shortcut icon" href="./logoIF.png" type="image/x-icon">
 	<link rel="stylesheet" type="text/css" href="{% static 'site.css' %}">
 </head>
 <body>
@@ -22,6 +22,9 @@
         <a href="#" class = "link">Ajuda</a>
     </div>
 
+    <div id="alerta_url"> 
+    </div>
+
     <div class = "div2">
         <input type="text" placeholder=" Url do site" class="search-input" id ="url" size="100">
     </div>
@@ -31,19 +34,51 @@
         <!--Barra onde será colocado a url do site pelo usuário-->
         <button onclick="redirect()" class="search-button">Gerar mapa do site</button>
         <!--2 Botões : 1 Gera apenas o mapa do site 2 Gera o mapa do site e um arquivo .xml-->
-        <button type="submit" class="search-button">Gera mapa/Arquivo XML</button>
+        <button onclick="download_xml()" type="submit" class="search-button">Gera mapa/Arquivo XML</button>
     </div>
 
     <script>
+        const urlInput = document.getElementById("url");
+
         function redirect() {
-            var urlInput = document.getElementById("url");
             var urlValue = urlInput.value;
 
-        // Verificar se urlValue não está vazio
+            // Verificar se urlValue não está vazio
             if (urlValue.trim() !== '') {
                 // Redirecionar para a URL correta
-                window.location.href = "{% url 'mapGenerator:result' 'alface'%}".replace('alface',urlValue);
+                window.location.href = "{% url 'mapGenerator:result' 'urlValue'%}".replace('urlValue', urlValue);
+            } else {
+                show_url_alert();
             }
+        }
+
+        function download_xml() {
+            var urlValue = urlInput.value;
+
+            if (urlValue.trim() !== '') {
+                hide_url_alert();
+                window.location.href = "{% url 'mapGenerator:download-xml' 'urlValue' %}".replace('urlValue', encodeURIComponent(urlValue));
+            } else {
+                show_url_alert();
+            }
+        }
+
+        function show_url_alert() {
+            // Exibir popup de alerta
+            var alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-danger';
+            alertDiv.innerHTML = 'URL inválida. Por favor, insira uma URL válida.';
+
+            var alertContainer = document.getElementById('alerta_url');
+            alertContainer.innerHTML = ''; // Limpa o conteúdo atual da div
+            alertContainer.appendChild(alertDiv);
+            alertContainer.classList.remove('hidden');
+        }
+
+        function hide_url_alert() {
+            var alertContainer = document.getElementById('alerta_url');
+            alertContainer.innerHTML = ''; // Limpa o conteúdo atual da div
+            alertContainer.classList.add('hidden');
         }
     </script>
 </body>

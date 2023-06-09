@@ -77,6 +77,10 @@ a:hover {
     width: 20%;
 }
 
+.hidden {
+    display: none;
+}
+
 @media (max-width: 750px) {
     #url{
         width: 90%;
