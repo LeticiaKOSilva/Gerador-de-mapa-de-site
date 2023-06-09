@@ -4,6 +4,8 @@ app_name = 'mapGenerator'
 
 urlpatterns = [
     path('', views.index,name='index'),
-    path('nomeDepoisDaBarra', views.pagina,name='pagina'),
+    path('geradorDeMapaDeSite', views.index,name='index'),
+    path('resultado?url=<str:url>', views.resultPage,name='result'),
+    path('resultado?', views.resultPage,name='result'),
 
 ]

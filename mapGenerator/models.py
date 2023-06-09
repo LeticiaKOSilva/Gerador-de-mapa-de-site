@@ -1,4 +1,5 @@
 ## Representa um Link (Endereço Web).
+from django.forms import ModelForm
 class Link:
     """
     Representa um Link (Endereço Web).
@@ -17,3 +18,4 @@ class Link:
 
     def __str__(self):
         return f'\n{self.title} = {self.url}\n{self.conteudo}\n'
+

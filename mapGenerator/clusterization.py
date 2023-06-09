@@ -8,6 +8,20 @@ from .text_html_functions import *
 from string import punctuation
 
 
+    
+
+def get_best_silhouette_score(X,start_range,end_range):
+    range_clusters = range(start_range, end_range)
+    silhouette_scores = []
+
+    for num_clusters in range_clusters:
+        kmeans = KMeans(n_clusters=num_clusters, n_init=10)
+        kmeans.fit(X)
+        labels = kmeans.labels_
+        score = silhouette_score(X, labels)
+        silhouette_scores.append(score)
+    return range_clusters[silhouette_scores.index(max(silhouette_scores))]
+
 def clusterize(links: list[Link]):
 #   
     links = list(filter(lambda text: text.url.strip(), links))
@@ -19,18 +33,7 @@ def clusterize(links: list[Link]):
 
     X = normalize(X)
 
-    # Testar diferentes números de clusters
-    range_clusters = range(2, 12)
-    silhouette_scores = []
-
-    for num_clusters in range_clusters:
-        kmeans = KMeans(n_clusters=num_clusters, n_init=10)
-        kmeans.fit(X)
-        labels = kmeans.labels_
-        score = silhouette_score(X, labels)
-        silhouette_scores.append(score)
-
-    best_num_clusters = range_clusters[silhouette_scores.index(max(silhouette_scores))]
+    best_num_clusters = get_best_silhouette_score(X,2,12)
 
     kmeans = KMeans(n_clusters=best_num_clusters, n_init=10)
     kmeans.fit(X)
