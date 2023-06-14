@@ -1,5 +1,15 @@
 
-const urlInput = document.getElementById("url");
+const urlInput = document.querySelector("#url");
+
+document.querySelector("#siteMapButton").addEventListener("click", (e) => {
+    e.preventDefault();
+    redirect();
+});
+
+document.querySelector("#xmlButton").addEventListener("click", (e) => {
+    e.preventDefault();
+    download_xml();
+});
 
 function redirect() {
     var urlValue = urlInput.value;
@@ -7,7 +17,7 @@ function redirect() {
     // Verificar se urlValue não está vazio
     if (urlValue.trim() !== '') {
         // Redirecionar para a URL correta
-        window.location.href = "{% url 'mapGenerator:result' 'urlValue'%}".replace('urlValue', urlValue);
+        window.location.href = "{% url 'mapGenerator:result' %}";
     } else {
         show_url_alert();
     }
@@ -76,16 +86,16 @@ function show_url_alert() {
     // Exibir popup de alerta
     var alertDiv = document.createElement('div');
     alertDiv.className = 'alert alert-danger';
-    alertDiv.innerHTML = 'URL inválida. Por favor, insira uma URL válida.';
+    alertDiv.innerHTML = 'URL inválida! Por favor, insira uma URL válida.';
 
-    var alertContainer = document.getElementById('alerta_url');
+    var alertContainer = document.querySelector('#alertConteiner');
     alertContainer.innerHTML = ''; // Limpa o conteúdo atual da div
     alertContainer.appendChild(alertDiv);
     alertContainer.classList.remove('hidden');
 }
 
 function hide_url_alert() {
-    var alertContainer = document.getElementById('alerta_url');
+    var alertContainer = document.querySelector('#alertConteiner');
     alertContainer.innerHTML = ''; // Limpa o conteúdo atual da div
     alertContainer.classList.add('hidden');
 }
