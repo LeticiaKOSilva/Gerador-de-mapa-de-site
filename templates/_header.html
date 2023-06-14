@@ -1,0 +1,29 @@
+{% load static %}
+<header class="fixed-top bg-primary text-light">
+    <nav class="navbar navbar-expand-lg bg-expand-lg navbar-dark">
+        <div class="container-fluid container">
+            <a class="navbar-brand" href="#" alt="Logo do Gerador de Mapa de Site">
+                <img src="{% static 'img/logo.png' %}" alt="Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse container text-center justify-content-center"
+                id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 column-gap-3">
+                   <li><a class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="/">Home</a></li></li>
+                   <li><a class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="/homePage/">Gerador</a></li></li>
+                </ul>
+
+
+                <div class="d-flex column-gap-3">
+                    <a class="btn btn-outline-light fw-medium" href="#">Entrar</a></li>
+                    <a class="btn btn-light text-primary fw-medium" href="#">Cadastrar</a></li>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>

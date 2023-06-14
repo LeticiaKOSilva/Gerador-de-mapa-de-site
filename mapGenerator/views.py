@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 import json
 
 def index(request):
-    TEMPLATE_NAME = 'mapGenerator/site.html'
+    TEMPLATE_NAME = 'mapGenerator/index.html'
     return render(request,TEMPLATE_NAME)
 
 
@@ -23,15 +23,22 @@ def download_xml(request, url=''):
     '''
     Função responsável por gerar um arquivo XML com o mapa do site.
     '''
-    root = ET.Element("root")
-    child = ET.SubElement(root, "child")
-    child.text = "Conteúdo do XML"
-    tree = ET.ElementTree(root)
 
-    response = HttpResponse(content_type='application/xml')
-    response['Content-Disposition'] = 'attachment; filename="arquivo.xml"'
+    if request.method == 'POST':
+        url = request.POST.get('url')
+        print(url)  # Replace this with your desired action
+        return HttpResponse('Success')  # You can customize the response message as needed
+    else:
+        return HttpResponse('Invalid request')
+        # root = ET.Element("root")
+        # child = ET.SubElement(root, "child")
+        # child.text = "Conteúdo do XML"
+        # tree = ET.ElementTree(root)
 
-    # Salva o arquivo XML na resposta (response)
-    tree.write(response, encoding='utf-8', xml_declaration=True)
+        # response = HttpResponse(content_type='application/xml')
+        # response['Content-Disposition'] = 'attachment; filename="arquivo.xml"'
 
-    return response
+        # # Salva o arquivo XML na resposta (response)
+        # tree.write(response, encoding='utf-8', xml_declaration=True)
+
+        # return response
