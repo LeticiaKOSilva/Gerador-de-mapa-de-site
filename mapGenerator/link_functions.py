@@ -56,7 +56,7 @@ def create_links_list(url: String, soup: BeautifulSoup): #
        
             if link_href:
                 links.append(
-                   Link(link_tag.text, treated_link, "") #get_content(treated_link))
+                   Link(link_tag.text, treated_link, get_content(treated_link))
                 )
       
     return links
