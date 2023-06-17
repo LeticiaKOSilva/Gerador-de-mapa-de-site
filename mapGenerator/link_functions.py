@@ -7,7 +7,9 @@ from .models import Link
 #
 def get_links(url): #
     # Padroniza a URL.
+    print(url)
     url = standardize_url(url)
+    print(url)
 
     # Cria a requisição.
     response = create_request(url)
@@ -38,6 +40,8 @@ def create_request(url, ssl_cert=True): #
         return None
     except (requests.exceptions.MissingSchema): # Caso a url esteja em formato inválido
         return None
+    except (requests.exceptions.InvalidSchema): # Caso a url esteja em formato inválido
+        return None
 #
 
 
@@ -52,7 +56,7 @@ def create_links_list(url: String, soup: BeautifulSoup): #
        
             if link_href:
                 links.append(
-                   Link(link_tag.text,treated_link,get_content(treated_link))
+                   Link(link_tag.text, treated_link, "") #get_content(treated_link))
                 )
       
     return links
@@ -60,9 +64,14 @@ def create_links_list(url: String, soup: BeautifulSoup): #
 
 ## Padroniza a URL recebida pela API.
 def standardize_url(url: String): #
-    # A url deve iniciar com 'https://' ou 'http://'
-    if (not url.startswith("https://") and not url.startswith("http://")):
-        return f"https://{url}"
+    if not url.startswith("https://") and not url.startswith("http://"):
+        url = "https://" + url  # Adiciona "https://" por padrão
+
+    parsed_url = url.split("//")
+    domain = parsed_url[1] if len(parsed_url) > 1 else parsed_url[0]
+
+    if not domain.startswith("www."):
+        url = url.replace(domain, "www." + domain)
 
     return url
 #

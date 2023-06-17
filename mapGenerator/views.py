@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from .link_functions import get_links
-from .clusterization import clusterize
-from django.http import HttpResponse
+# from .clusterization import clusterize
+from django.http import JsonResponse
 
-import xml.etree.ElementTree as ET
+# import xml.etree.ElementTree as ET
 import json
 
 def index(request):
@@ -11,34 +11,59 @@ def index(request):
     return render(request,TEMPLATE_NAME)
 
 
-def resultPage(request, url=''):
-    TEMPLATE_NAME = 'mapGenerator/result.html'
-    clusters = clusterize(get_links(url))
-    clusters_json = json.dumps(clusters)
-    # print(clusters_json)
-    return render(request,TEMPLATE_NAME,{'clusters_json' : clusters_json,})  
+def result(request, url=''):
+    if request.method == 'POST':
+        # Retrieve the JSON data from the request
+        json_data = json.loads(request.body)
+
+        # Access the JSON data
+        url = json_data.get('url')
+
+        # Get the links
+        links = get_links(url)
+
+        # Convert links to a list of dictionaries
+        if links is not None:
+            links_data = [link.to_dict() for link in links]
+            valid = True
+        else:
+            links_data = None
+            valid = False
+        print(valid)
+        # Prepare the response
+        response_data = {
+            'valid': valid,
+            'links': links_data
+        }
+
+        return JsonResponse(response_data)
+
+    # Handle other HTTP methods or invalid requests
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 
-def download_xml(request, url=''):
+def download_xml(request):
     '''
     Função responsável por gerar um arquivo XML com o mapa do site.
     '''
-
     if request.method == 'POST':
-        url = request.POST.get('url')
-        print(url)  # Replace this with your desired action
-        return HttpResponse('Success')  # You can customize the response message as needed
-    else:
-        return HttpResponse('Invalid request')
-        # root = ET.Element("root")
-        # child = ET.SubElement(root, "child")
-        # child.text = "Conteúdo do XML"
-        # tree = ET.ElementTree(root)
+        # Retrieve the JSON data from the request
+        json_data = json.loads(request.body)
 
-        # response = HttpResponse(content_type='application/xml')
-        # response['Content-Disposition'] = 'attachment; filename="arquivo.xml"'
+        # Access the JSON data
+        teste = json_data.get('url')
+        print(teste)
 
-        # # Salva o arquivo XML na resposta (response)
-        # tree.write(response, encoding='utf-8', xml_declaration=True)
+        # Process the JSON data
+        # ...
 
-        # return response
+        # Prepare the response
+        response_data = {
+            'message': 'Data received and processed successfully!',
+            # ...
+        }
+
+        return JsonResponse(response_data)
+
+    # Handle other HTTP methods or invalid requests
+    return JsonResponse({'error': 'Invalid request'}, status=400)

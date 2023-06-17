@@ -18,25 +18,180 @@
                 <div class="col-xl-6 ">
                     <div class="text-center text-white">
                         <!-- Page heading--> Forneça uma URL
-                        <h1 class="mb-5 text-dark">Explore, Engaje, Tenha Sucesso: Desbloqueie o Potencial do seu Website!</h1>
+                        <h1 class="mb-5 text-dark">Explore, Engaje, Tenha Sucesso: Desbloqueie o Potencial do seu
+                            Website!</h1>
                         <form class="form-subscribe" id="contactForm" data-sb-form-api-token="API_TOKEN">
+                            {% csrf_token %}
                             <!-- URL input-->
                             <div class="row">
                                 <input class="form-control form-control-lg" id="url" placeholder="Forneça uma URL" />
                                 <div id="alertConteiner"></div>
                             </div>
                             <div class="row grid gap-3 mt-3">
-                                <div class="col p-2 g-col-4"><button class="btn btn-primary btn-lg" id="siteMapButton" onclick="redirect()">Gerar Mapa do Site</button></div>
-                                <div class="col p-2 g-col-4"><button class="btn btn-primary btn-lg" id="xmlButton" onclick="download_xml()">Download XML</button></div>
+                                <div class="col p-2 g-col-4"><button class="btn btn-primary btn-lg" id="siteMapButton"
+                                        onclick="redirect()">Gerar Mapa do Site</button></div>
+                                <div class="col p-2 g-col-4"><button class="btn btn-primary btn-lg" id="xmlButton"
+                                        onclick="download_xml()">Download XML</button></div>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
+        <div id="links-container"></div>
     </main>
 
     {% include '_footer.html' %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+        const urlInput = document.querySelector("#url");
+        const siteMapButton = document.querySelector("#siteMapButton");
+
+        /**
+        * Simulando click no botão com a tecla enter.
+        */
+        document.addEventListener('keydown', function (e) {
+            if (e.key == "Enter") {
+                siteMapButton.click();
+            }
+        });
+
+        siteMapButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            redirect();
+        });
+
+        document.querySelector("#xmlButton").addEventListener("click", (e) => {
+            e.preventDefault();
+            download_xml();
+        });
+
+        function redirect() {
+            var url_str = urlInput.value;
+
+            // Verificar se url não está vazia
+            if (url_str.trim() !== '') {
+                hide_url_alert();
+                create_request("{% url 'mapGenerator:result' %}", { url: url_str }, show_map_generator_data);
+            } else {
+                show_url_alert();
+            }
+        }
+
+
+        function show_map_generator_data(request) {
+            if (request.valid) {
+                // Obtenha uma referência à <div> onde deseja inserir a tabela
+                var divContainer = document.querySelector('#links-container');
+
+                // Crie a tabela com as classes Bootstrap
+                var table = document.createElement('table');
+                table.classList.add('table', 'table-striped');
+
+                // Crie o cabeçalho da tabela com as classes Bootstrap
+                var thead = document.createElement('thead');
+                var headerRow = thead.insertRow();
+                var headerTitleCell = headerRow.insertCell();
+                headerTitleCell.textContent = 'Título';
+                var headerLinkCell = headerRow.insertCell();
+                headerLinkCell.textContent = 'Link';
+
+                // Adicione o cabeçalho à tabela
+                table.appendChild(thead);
+
+                // Crie o corpo da tabela
+                var tbody = document.createElement('tbody');
+
+                // Percorra a lista de links
+                request.links.forEach(function (link) {
+                    // Crie uma nova linha na tabela
+                    var row = tbody.insertRow();
+
+                    // Crie uma coluna para o título do link
+                    var titleCell = row.insertCell();
+                    var titleLink = document.createElement('a');
+                    titleLink.href = link.url;
+                    titleLink.textContent = link.title;
+                    titleCell.appendChild(titleLink);
+
+                    // Crie uma coluna para o link
+                    var linkCell = row.insertCell();
+                    var linkText = document.createTextNode(link.url);
+                    linkCell.appendChild(linkText);
+                });
+
+                // Adicione o corpo à tabela
+                table.appendChild(tbody);
+
+                // Adicione a tabela à <div> container
+                divContainer.innerHTML = "";
+                divContainer.appendChild(table);
+            } else {
+                show_url_alert();
+            }
+        }
+
+
+        function download_xml() {
+            // var url_str = urlInput.value;
+
+            // if (url_str.trim() !== '') {
+            //     hide_url_alert();
+            //     create_request("{% url 'mapGenerator:download-xml' %}", { url: url_str });
+            // } else {
+            //     show_url_alert();
+            // }
+        }
+
+        function create_request(end_point, json, success_function) {
+            var csrftoken = $('[name="csrfmiddlewaretoken"]').val();
+            add_key_and_value(json, "csrfmiddlewaretoken", csrftoken);
+
+            var request_data = JSON.stringify(json);
+
+            $.ajax({
+                url: end_point,
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json",
+                data: request_data,
+                beforeSend: function (xhr, settings) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                },
+                success: function (response) {
+                    success_function(response);
+                },
+                error: function (xhr, errmsg, err) {
+                    console.log("Não foi dessa vez.");
+                }
+            });
+
+        }
+
+        function add_key_and_value(object, key, value) {
+            object[key] = value;
+        }
+
+        function show_url_alert() {
+            // Exibir popup de alerta
+            var alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-danger';
+            alertDiv.innerHTML = 'URL inválida! Por favor, insira uma URL válida.';
+
+            var alertContainer = document.querySelector('#alertConteiner');
+            alertContainer.innerHTML = ''; // Limpa o conteúdo atual da div
+            alertContainer.appendChild(alertDiv);
+            alertContainer.classList.remove('hidden');
+        }
+
+        function hide_url_alert() {
+            var alertContainer = document.querySelector('#alertConteiner');
+            alertContainer.innerHTML = ''; // Limpa o conteúdo atual da div
+            alertContainer.classList.add('hidden');
+        }
+
+    </script>
 </body>
 
 
