@@ -113,6 +113,10 @@ thead * {
     background-color: #0d6efd;
 }
 
+.hide {
+    display: none;
+}
+
 #div-descover {
     padding: 0;
 }
@@ -130,13 +134,12 @@ thead * {
     color: #FFF !important;
 }
 
-#site-map-results {
+#container-margin {
     margin-top: 5vh;
     margin-bottom: 5vh;
-    display: none;
 }
 
-#links-container {
+.max-height-container {
     height: 250px;
 }
 

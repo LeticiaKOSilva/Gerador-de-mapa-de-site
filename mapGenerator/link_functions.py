@@ -54,7 +54,7 @@ def create_links_list(url: String, soup: BeautifulSoup): #
        
             if link_href:
                 links.append(
-                   Link(link_tag.text, treated_link, get_content(treated_link))
+                   Link(link_tag.text, treated_link, "")  #get_content(treated_link))
                 )
       
     return links
@@ -118,7 +118,11 @@ def get_links_sorted_by_occurrence(url: str):
     Obtém uma lista de links ordenados pela sua 
     ocorrência na página em ordem decrescente.
     '''
-    return sort_links_by_occurrence(get_links(url))
+    links = []
+    for link, count in sort_links_by_occurrence(extract_urls(get_links(url))):
+        links.append((link, count))
+
+    return links
 
 def sort_links_by_occurrence(links):
     '''

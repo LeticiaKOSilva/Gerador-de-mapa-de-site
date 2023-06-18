@@ -14,7 +14,7 @@
     {% include '_header.html' %}
     <main>
         <div class="container position-relative">
-            <section class="row justify-content-center">
+            <section id="search-form" class="row justify-content-center">
                 <div class="col-xl-6 ">
                     <div class="text-center text-white">
                         <!-- Page heading--> Forneça uma URL
@@ -30,22 +30,44 @@
                             <div class="row grid gap-3 mt-3">
                                 <div class="col p-2 g-col-4"><button class="btn btn-primary btn-lg"
                                         id="siteMapButton">Gerar Mapa do Site</button></div>
-                                <div class="col p-2 g-col-4"><button class="btn btn-primary btn-lg" id="xmlButton"
-                                        onclick="download_xml()">Download XML</button></div>
                             </div>
                         </form>
                     </div>
                 </div>
             </section>
-            <section id="site-map-results">
-                <p class="h3 text-primary text-center text-decoration-underline ">Mapa do Site</p>
-                <div id="links-container" class="overflow-scroll border border-primary">
 
+            <section id="site-map-results" class="hide mt-3 mb-3">
+                <div class="site-map">
+                    <p class="h3 text-primary text-center text-decoration-underline ">Mapa do Site</p>
+                    <div id="links-container" class="overflow-scroll border border-primary max-height-container">
+
+                    </div>
                 </div>
-                <p class="h3 text-primary text-center">
-                    Carregando
-                    <i class="fas fa-spinner fa-spin"></i>
-                </p>
+
+                <div class="site-map-ordened">
+                    <p class="h3 text-primary text-center text-decoration-underline ">Agrupamentos</p>
+                    <div class="text-center mt-3 mb-3">
+                        <div class="btn-group grid gap-4 d-flex flex-wrap" role="group"
+                            aria-label="Basic radio toggle button group">
+                            <input type="radio" class="btn-check" name="btnradio" id="map-btn-1" autocomplete="off"
+                                checked>
+                            <label class="btn btn-outline-primary" for="map-btn-1">Ordem de Ocorrência</label>
+
+                            <input type="radio" class="btn-check" name="btnradio" id="map-btn-2" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="map-btn-2">Tags Semânticas</label>
+
+                            <input type="radio" class="btn-check" name="btnradio" id="map-btn-3" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="map-btn-3">Semelhança Contextual</label>
+
+                            <input type="radio" class="btn-check" name="btnradio" id="map-btn-4" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="map-btn-4">Relevância</label>
+                        </div>
+                    </div>
+                    <div id="group-container" class="overflow-scroll border border-primary hide max-height-container">
+
+                    </div>
+                </div>
+
             </section>
         </div>
 
@@ -57,6 +79,7 @@
 
         const urlInput = document.querySelector("#url");
         const siteMapButton = document.querySelector("#siteMapButton");
+        const loader = $('<div id="loader" class="hide container-margin"><p class="h3 text-primary text-center"> Carregando<i class="fas fa-spinner fa-spin"></i></p></div>');
 
         /**
         * Simulando click no botão com a tecla enter.
@@ -69,13 +92,7 @@
 
         siteMapButton.addEventListener("click", (e) => {
             e.preventDefault();
-            console.log("Pressionou");
             site_map_request();
-        });
-
-        document.querySelector("#xmlButton").addEventListener("click", (e) => {
-            e.preventDefault();
-            download_xml();
         });
 
         function site_map_request() {
@@ -84,23 +101,20 @@
             // Verificar se url não está vazia
             if (url_str.trim() !== '') {
                 hide_url_alert();
+                $('#search-form').after(loader.html());
+                disable_element_by_id('#siteMapButton');
                 create_request("{% url 'mapGenerator:result' %}", { url: url_str }, show_map_generator_data);
+                occurrence_order_request(url_str);
             } else {
                 hide_site_map_results();
                 show_url_alert();
             }
         }
 
-        function show_site_map_results() {
-            document.querySelector('#site-map-results').style.display = "block";
-        }
-
-        function hide_site_map_results() {
-            document.querySelector('#site-map-results').style.display = "none";
-        }
-
 
         function show_map_generator_data(request) {
+            $('#search-form').next().remove();
+            enable_element_by_id('#siteMapButton');
             if (request.valid) {
                 // Obtenha uma referência à <div> onde deseja inserir a tabela
                 var divContainer = document.querySelector('#links-container');
@@ -130,15 +144,13 @@
                     var row = tbody.insertRow();
 
                     // Crie uma coluna para o título do link
-                    var titleLink = document.createElement('a');
-                    titleLink.href = link.url;
-                    titleLink.textContent = link.title;
                     row.insertCell().appendChild(document.createTextNode(link.title));
 
                     // Crie uma coluna para o link
                     var linkUrl = document.createElement('a');
                     linkUrl.href = link.url;
                     linkUrl.textContent = link.url;
+                    linkUrl.target = "_blank";
                     row.insertCell().appendChild(linkUrl);
                 });
 
@@ -154,16 +166,69 @@
             }
         }
 
+        function occurrence_order_request(url_str) {
+            $('#group-container').after(loader.html());
+            disable_map_buttons();
+            create_request("{% url 'mapGenerator:occurrence' %}", { url: url_str }, show_occurrence_order_data);
+        }
 
-        function download_xml() {
-            // var url_str = urlInput.value;
+        function show_occurrence_order_data(request) {
+            $('#group-container').next().remove();
+            if (request.valid) {
+                // Obtenha uma referência à <div> onde deseja inserir a tabela
+                var divContainer = document.querySelector('#group-container');
+                $('#group-container').next().remove();
+                show_tag_by_id("#group-container");
 
-            // if (url_str.trim() !== '') {
-            //     hide_url_alert();
-            //     create_request("{% url 'mapGenerator:download-xml' %}", { url: url_str });
-            // } else {
-            //     show_url_alert();
-            // }
+                // Crie a tabela com as classes Bootstrap
+                var table = document.createElement('table');
+                table.classList.add('table', 'table-striped');
+
+                // Crie o cabeçalho da tabela com as classes Bootstrap
+                var thead = document.createElement('thead');
+                var headerRow = thead.insertRow();
+                var headerTitleCell = headerRow.insertCell();
+                headerTitleCell.textContent = 'Link';
+                var headerLinkCell = headerRow.insertCell();
+                headerLinkCell.textContent = 'Ocorrências';
+
+                // Adicione o cabeçalho à tabela
+                table.appendChild(thead);
+
+                // Crie o corpo da tabela
+                var tbody = document.createElement('tbody');
+
+                // Percorra a lista de links
+                request.links.forEach(function (link) {
+                    var row = tbody.insertRow();
+
+                    var linkUrl = document.createElement('a');
+
+                    linkUrl.href = link.url;
+                    linkUrl.textContent = link.url;
+                    linkUrl.target = "_blank";
+                    var linkCell = row.insertCell();
+                    linkCell.classList.add('text-truncate'); // Classe para truncar o texto
+                    linkCell.style.maxWidth = "400px"; // Defina o tamanho máximo desejado em pixels
+                    linkCell.appendChild(linkUrl);
+
+                    var countCell = row.insertCell();
+                    countCell.classList.add('text-truncate', 'text-center'); // Classe para truncar o texto
+                    countCell.style.maxWidth = "50px"; // Defina o tamanho máximo desejado em pixels
+                    countCell.appendChild(document.createTextNode(link.count));
+                });
+
+                // Adicione o corpo à tabela
+                table.appendChild(tbody);
+
+                // Adicione a tabela à <div> container
+                divContainer.innerHTML = "";
+                divContainer.appendChild(table);
+            } else {
+                hide_site_map_results()
+                show_url_alert();
+            }
+            enable_map_buttons();
         }
 
         function create_request(end_point, json, success_function) {
@@ -189,6 +254,44 @@
                 }
             });
 
+        }
+
+        function disable_map_buttons() {
+            disable_element_by_id("#map-btn-1");
+            disable_element_by_id("#map-btn-2");
+            disable_element_by_id("#map-btn-3");
+            disable_element_by_id("#map-btn-4");
+        }
+
+        function enable_map_buttons() {
+            enable_element_by_id("#map-btn-1");
+            enable_element_by_id("#map-btn-2");
+            enable_element_by_id("#map-btn-3");
+            enable_element_by_id("#map-btn-4");
+        }
+
+        function show_site_map_results() {
+            show_tag_by_id('#site-map-results');
+        }
+
+        function hide_site_map_results() {
+            hide_tag_by_id('#site-map-results');
+        }
+
+        function show_tag_by_id(tag_id) {
+            document.querySelector(tag_id).style.display = "block";
+        }
+
+        function hide_tag_by_id(tag_id) {
+            document.querySelector(tag_id).style.display = "none";
+        }
+
+        function disable_element_by_id(element_id) {
+            document.querySelector(element_id).disabled = true;
+        }
+
+        function enable_element_by_id(element_id) {
+            document.querySelector(element_id).disabled = false;
         }
 
         function add_key_and_value(object, key, value) {

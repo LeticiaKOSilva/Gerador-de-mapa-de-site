@@ -10,4 +10,6 @@ urlpatterns = [
     path('resultado/', views.result, name='result'),
     path('download-xml?url=<str:url>', views.download_xml, name='download-xml'),
     path('download-xml/', views.download_xml, name='download-xml'),
+    path('occurrence?url=<str:url>', views.occurrence, name='occurrence'),
+    path('occurrence/', views.occurrence, name='occurrence'),
 ]
