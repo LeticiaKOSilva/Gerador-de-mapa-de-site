@@ -7,9 +7,7 @@ from .models import Link
 #
 def get_links(url): #
     # Padroniza a URL.
-    print(url)
     url = standardize_url(url)
-    print(url)
 
     # Cria a requisição.
     response = create_request(url)
@@ -38,9 +36,9 @@ def create_request(url, ssl_cert=True): #
         return requests.get(url, verify=False)
     except (requests.exceptions.ConnectionError): # Tratamento caso a página não exista.
         return None
-    except (requests.exceptions.MissingSchema): # Caso a url esteja em formato inválido
+    except (requests.exceptions.MissingSchema): # Caso a url esteja em formato inválido.
         return None
-    except (requests.exceptions.InvalidSchema): # Caso a url esteja em formato inválido
+    except (requests.exceptions.InvalidSchema): # Caso a url seja um mailto.
         return None
 #
 

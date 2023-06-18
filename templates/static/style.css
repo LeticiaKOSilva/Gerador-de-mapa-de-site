@@ -1,4 +1,3 @@
-
 * {
     margin: 0;
     padding: 0;
@@ -18,7 +17,14 @@ footer {
 }
 
 footer * {
-    align-items: center; /* Alinha verticalmente no centro */
+    align-items: center;
+    /* Alinha verticalmente no centro */
+}
+
+thead * {
+    text-align: center;
+    color: #0d6efd;
+    font-weight: bold;
 }
 
 .navbar {
@@ -29,7 +35,8 @@ footer * {
     height: 3vw;
 }
 
-.dropdown-item:hover, .detail-link:hover {
+.dropdown-item:hover,
+.detail-link:hover {
     background-color: #0d6efd !important;
 }
 
@@ -44,15 +51,18 @@ footer * {
     border-color: #0d6efd !important;
 }
 
-.btn-outline-light:hover, .btn-outline-light:active {
+.btn-outline-light:hover,
+.btn-outline-light:active {
     color: #0d6efd;
 }
 
 .btn-light {
-    color: #0d6efd; 
+    color: #0d6efd;
 }
 
-.btn-light:hover, .btn-light:active, .btn-light:focus {
+.btn-light:hover,
+.btn-light:active,
+.btn-light:focus {
     background-color: #0d6efd;
     border: 1px solid #FFF;
     color: #FFF !important;
@@ -74,7 +84,9 @@ footer * {
     font-size: 0%;
 }
 
-.h1, .h3, .h6 {
+.h1,
+.h3,
+.h6 {
     padding-top: 1em;
 }
 
@@ -112,19 +124,26 @@ footer * {
     width: 15em;
 }
 
-
-
-
-#search-btn:hover, #search-btn:active {
+#search-btn:hover,
+#search-btn:active {
     background-color: #4C4C4C !important;
     color: #FFF !important;
 }
 
+#site-map-results {
+    margin-top: 5vh;
+    margin-bottom: 5vh;
+    display: none;
+}
+
+#links-container {
+    height: 250px;
+}
 
 @media (prefers-reduced-motion: no-preference) {
-  :root {
-    scroll-behavior: smooth;
-  }
+    :root {
+        scroll-behavior: smooth;
+    }
 }
 
 
@@ -157,4 +176,3 @@ div#img2 {
     height: 40vh;
     margin: 10px;
 }
-
