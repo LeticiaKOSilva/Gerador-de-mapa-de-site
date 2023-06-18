@@ -121,11 +121,15 @@ thead * {
     padding: 0;
 }
 
+#col-id {
+    display: flex;
+    flex-direction: column;
+}
+
 #buton-action {
-    margin-left: 16em;
     margin-top: 1em;
-    height: 4em;
-    width: 15em;
+    padding: 1em;
+    align-self: center;
 }
 
 #search-btn:hover,
@@ -149,7 +153,6 @@ thead * {
     }
 }
 
-
 @media screen and (max-width: 991px) {
     #sub-navbar #subNavbarSupportedContent {
         display: none !important;
@@ -157,6 +160,56 @@ thead * {
 
     main {
         padding-top: 120px;
+    }
+    
+    .rows {
+        padding: 0 1em;   
+    }
+
+    .rows #img2 {
+        margin: 0;
+    }
+
+    .rows #img:first-child {
+        margin-left: 0;
+    }
+
+    .rows #img:last-child {
+        margin-right: 0;
+    }
+
+    .rows #img {
+        width: 22%;
+    }
+
+    .row .h3, .row .h6 {
+        padding-left: 0;
+    }
+
+    #col-id {
+        padding: 1em 0;
+        flex: 100%;        
+    }
+
+    #col-id .h4, #col-id .h5 {
+        padding: 0;
+        align-self: center;
+        margin: 0;
+    }
+
+    #col-id .h5 {
+        padding: 1em 0;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .rows {
+        flex-flow: column;
+    }
+
+    .rows #img {
+        width: 100%;
+        margin: 0.5em 0;
     }
 }
 
