@@ -35,17 +35,19 @@
                     </div>
                 </div>
             </section>
-
-            <section id="site-map-results" class="hide mt-3 mb-3">
+            
+            <section id="site-map-results" class="hide mt-3 mb-5">
+                <hr>
                 <div class="site-map">
-                    <p class="h3 text-primary text-center text-decoration-underline ">Mapa do Site</p>
+                    <p class="h3 text-dark text-center text-decoration-underline ">Mapa do Site</p>
                     <div id="links-container" class="overflow-scroll border border-primary max-height-container">
-
+                        
                     </div>
                 </div>
-
+                
+                <hr>
                 <div class="site-map-ordened">
-                    <p class="h3 text-primary text-center text-decoration-underline ">Agrupamentos</p>
+                    <p class="h3 text-dark text-center text-decoration-underline ">Agrupamentos</p>
                     <div class="text-center mt-3 mb-3">
                         <div class="btn-group grid gap-4 d-flex flex-wrap" role="group"
                             aria-label="Basic radio toggle button group">
@@ -103,6 +105,7 @@
                 hide_url_alert();
                 $('#search-form').after(loader.html());
                 disable_element_by_id('#siteMapButton');
+                disable_element_by_id('#url');
                 create_request("{% url 'mapGenerator:result' %}", { url: url_str }, show_map_generator_data);
                 occurrence_order_request(url_str);
             } else {
@@ -115,6 +118,7 @@
         function show_map_generator_data(request) {
             $('#search-form').next().remove();
             enable_element_by_id('#siteMapButton');
+            enable_element_by_id('#url');
             if (request.valid) {
                 // Obtenha uma referência à <div> onde deseja inserir a tabela
                 var divContainer = document.querySelector('#links-container');
@@ -144,14 +148,20 @@
                     var row = tbody.insertRow();
 
                     // Crie uma coluna para o título do link
-                    row.insertCell().appendChild(document.createTextNode(link.title));
+                    var titleCell = row.insertCell();
+                    titleCell.classList.add('text-truncate'); 
+                    titleCell.style.maxWidth = "150px"; 
+                    titleCell.appendChild(document.createTextNode(link.title));
 
                     // Crie uma coluna para o link
                     var linkUrl = document.createElement('a');
                     linkUrl.href = link.url;
                     linkUrl.textContent = link.url;
                     linkUrl.target = "_blank";
-                    row.insertCell().appendChild(linkUrl);
+                    var linkCell = row.insertCell();
+                    linkCell.classList.add('text-truncate'); 
+                    linkCell.style.maxWidth = "300px"; 
+                    linkCell.appendChild(linkUrl);
                 });
 
                 // Adicione o corpo à tabela
@@ -169,6 +179,7 @@
         function occurrence_order_request(url_str) {
             $('#group-container').after(loader.html());
             disable_map_buttons();
+            hide_tag_by_id("#group-container");
             create_request("{% url 'mapGenerator:occurrence' %}", { url: url_str }, show_occurrence_order_data);
         }
 
@@ -203,7 +214,6 @@
                     var row = tbody.insertRow();
 
                     var linkUrl = document.createElement('a');
-
                     linkUrl.href = link.url;
                     linkUrl.textContent = link.url;
                     linkUrl.target = "_blank";
