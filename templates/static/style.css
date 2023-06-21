@@ -40,12 +40,6 @@ thead * {
     background-color: #0d6efd !important;
 }
 
-.title-logo {
-    font-family: 'Raleway', sans-serif;
-    font-size: 140% !important;
-    text-decoration: underline;
-}
-
 .btn-primary {
     background-color: #0d6efd !important;
     border-color: #0d6efd !important;
@@ -143,6 +137,11 @@ thead * {
     margin-bottom: 5vh;
 }
 
+#logo-img {
+    width: 175;
+    height: 30;
+}
+
 .max-height-container {
     height: 250px;
 }
@@ -153,11 +152,7 @@ thead * {
     }
 }
 
-@media screen and (max-width: 991px) {
-    #sub-navbar #subNavbarSupportedContent {
-        display: none !important;
-    }
-
+@media screen and (max-width : 991px) {
     main {
         padding-top: 120px;
     }
@@ -217,18 +212,4 @@ thead * {
     main {
         padding-top: 100px;
     }
-}
-
-div#img {
-    background-color: #4C4C4C;
-    width: 20%;
-    height: 30vh;
-    margin: 10px;
-}
-
-div#img2 {
-    background-color: #4C4C4C;
-    width: 100%;
-    height: 40vh;
-    margin: 10px;
 }

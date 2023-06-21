@@ -12,4 +12,8 @@ urlpatterns = [
     path('download-xml/', views.download_xml, name='download-xml'),
     path('occurrence?url=<str:url>', views.occurrence, name='occurrence'),
     path('occurrence/', views.occurrence, name='occurrence'),
+    path('contextual-similarity?url=<str:url>', views.contextual_similarity, 
+        name='contextual-similarity'),
+    path('contextual-similarity/', views.contextual_similarity, 
+        name='contextual-similarity'),
 ]

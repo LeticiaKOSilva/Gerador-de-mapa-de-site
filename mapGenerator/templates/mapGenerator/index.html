@@ -35,17 +35,19 @@
                     </div>
                 </div>
             </section>
-
-            <section id="site-map-results" class="hide mt-3 mb-3">
+            
+            <section id="site-map-results" class="hide mt-3 mb-5">
+                <hr>
                 <div class="site-map">
-                    <p class="h3 text-primary text-center text-decoration-underline ">Mapa do Site</p>
-                    <div id="links-container" class="overflow-scroll border border-primary max-height-container">
-
+                    <p class="h3 text-dark text-center text-decoration-underline ">Mapa do Site</p>
+                    <div id="links-container" class="overflow-scroll border border-dark-subtle max-height-container">
+                        
                     </div>
                 </div>
-
+                
+                <hr>
                 <div class="site-map-ordened">
-                    <p class="h3 text-primary text-center text-decoration-underline ">Agrupamentos</p>
+                    <p class="h3 text-dark text-center text-decoration-underline ">Agrupamentos</p>
                     <div class="text-center mt-3 mb-3">
                         <div class="btn-group grid gap-4 d-flex flex-wrap" role="group"
                             aria-label="Basic radio toggle button group">
@@ -63,7 +65,7 @@
                             <label class="btn btn-outline-primary" for="map-btn-4">Relevância</label>
                         </div>
                     </div>
-                    <div id="group-container" class="overflow-scroll border border-primary hide max-height-container">
+                    <div id="group-container" class="overflow-scroll border border-dark-subtle hide max-height-container">
 
                     </div>
                 </div>
@@ -81,6 +83,9 @@
         const siteMapButton = document.querySelector("#siteMapButton");
         const loader = $('<div id="loader" class="hide container-margin"><p class="h3 text-primary text-center"> Carregando<i class="fas fa-spinner fa-spin"></i></p></div>');
 
+        var selected_map_group = "#map-btn-1";
+        var url_str;
+
         /**
         * Simulando click no botão com a tecla enter.
         */
@@ -96,25 +101,25 @@
         });
 
         function site_map_request() {
-            var url_str = urlInput.value;
+            url_str = urlInput.value;
 
             // Verificar se url não está vazia
             if (url_str.trim() !== '') {
                 hide_url_alert();
                 $('#search-form').after(loader.html());
                 disable_element_by_id('#siteMapButton');
+                disable_element_by_id('#url');
                 create_request("{% url 'mapGenerator:result' %}", { url: url_str }, show_map_generator_data);
-                occurrence_order_request(url_str);
             } else {
                 hide_site_map_results();
                 show_url_alert();
             }
         }
 
-
         function show_map_generator_data(request) {
             $('#search-form').next().remove();
             enable_element_by_id('#siteMapButton');
+            enable_element_by_id('#url');
             if (request.valid) {
                 // Obtenha uma referência à <div> onde deseja inserir a tabela
                 var divContainer = document.querySelector('#links-container');
@@ -122,7 +127,7 @@
 
                 // Crie a tabela com as classes Bootstrap
                 var table = document.createElement('table');
-                table.classList.add('table', 'table-striped');
+                table.classList.add('table', 'table-striped', 'border', 'border-dark-subtle');
 
                 // Crie o cabeçalho da tabela com as classes Bootstrap
                 var thead = document.createElement('thead');
@@ -144,14 +149,20 @@
                     var row = tbody.insertRow();
 
                     // Crie uma coluna para o título do link
-                    row.insertCell().appendChild(document.createTextNode(link.title));
+                    var titleCell = row.insertCell();
+                    titleCell.classList.add('text-truncate', 'border', 'border-dark-subtle'); 
+                    titleCell.style.maxWidth = "150px"; 
+                    titleCell.appendChild(document.createTextNode(link.title));
 
                     // Crie uma coluna para o link
                     var linkUrl = document.createElement('a');
                     linkUrl.href = link.url;
                     linkUrl.textContent = link.url;
                     linkUrl.target = "_blank";
-                    row.insertCell().appendChild(linkUrl);
+                    var linkCell = row.insertCell();
+                    linkCell.classList.add('text-truncate', 'border', 'border-dark-subtle'); 
+                    linkCell.style.maxWidth = "300px"; 
+                    linkCell.appendChild(linkUrl);
                 });
 
                 // Adicione o corpo à tabela
@@ -160,20 +171,24 @@
                 // Adicione a tabela à <div> container
                 divContainer.innerHTML = "";
                 divContainer.appendChild(table);
+                occurrence_order_request();
             } else {
                 hide_site_map_results()
                 show_url_alert();
             }
         }
 
-        function occurrence_order_request(url_str) {
+        // Relevância Presumida.
+        function occurrence_order_request() {
             $('#group-container').after(loader.html());
             disable_map_buttons();
+            hide_tag_by_id("#group-container");
             create_request("{% url 'mapGenerator:occurrence' %}", { url: url_str }, show_occurrence_order_data);
         }
 
         function show_occurrence_order_data(request) {
             $('#group-container').next().remove();
+            enable_element_by_id(selected_map_group);
             if (request.valid) {
                 // Obtenha uma referência à <div> onde deseja inserir a tabela
                 var divContainer = document.querySelector('#group-container');
@@ -182,7 +197,7 @@
 
                 // Crie a tabela com as classes Bootstrap
                 var table = document.createElement('table');
-                table.classList.add('table', 'table-striped');
+                table.classList.add('table', 'table-striped', 'border', 'border-dark-subtle');
 
                 // Crie o cabeçalho da tabela com as classes Bootstrap
                 var thead = document.createElement('thead');
@@ -203,17 +218,16 @@
                     var row = tbody.insertRow();
 
                     var linkUrl = document.createElement('a');
-
                     linkUrl.href = link.url;
                     linkUrl.textContent = link.url;
                     linkUrl.target = "_blank";
                     var linkCell = row.insertCell();
-                    linkCell.classList.add('text-truncate'); // Classe para truncar o texto
+                    linkCell.classList.add('text-truncate', 'border', 'border-dark-subtle'); // Classe para truncar o texto
                     linkCell.style.maxWidth = "400px"; // Defina o tamanho máximo desejado em pixels
                     linkCell.appendChild(linkUrl);
 
                     var countCell = row.insertCell();
-                    countCell.classList.add('text-truncate', 'text-center'); // Classe para truncar o texto
+                    countCell.classList.add('text-truncate', 'text-center', 'border', 'border-dark-subtle'); // Classe para truncar o texto
                     countCell.style.maxWidth = "50px"; // Defina o tamanho máximo desejado em pixels
                     countCell.appendChild(document.createTextNode(link.count));
                 });
@@ -229,7 +243,22 @@
                 show_url_alert();
             }
             enable_map_buttons();
+            selected_map_group = "#map-btn-1";
+            disable_element_by_id(selected_map_group);
         }
+
+
+        // Tags Semânticas 
+    
+        // Semelhança Contextual
+        // function contextual_similarity_request() {
+        //     $('#group-container').after(loader.html());
+        //     disable_map_buttons();
+        //     hide_tag_by_id("#group-container");
+        //     create_request("{% url 'mapGenerator:occurrence' %}", { url: url_str }, show_contextual_similarity_data);
+        // }
+
+        // Relevância
 
         function create_request(end_point, json, success_function) {
             var csrftoken = $('[name="csrfmiddlewaretoken"]').val();

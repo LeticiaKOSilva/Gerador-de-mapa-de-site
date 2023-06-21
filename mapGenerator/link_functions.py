@@ -1,5 +1,6 @@
 from tokenize import String
 import requests
+from requests import exceptions
 from bs4 import BeautifulSoup
 from collections import defaultdict
 from .models import Link
@@ -32,13 +33,12 @@ def create_request(url, ssl_cert=True): #
     """
     try:
         return requests.get(url)
-    except (requests.exceptions.SSLError):
+    except (exceptions.SSLError):
         return requests.get(url, verify=False)
-    except (requests.exceptions.ConnectionError): # Tratamento caso a página não exista.
+    except (exceptions.ConnectionError, exceptions.MissingSchema, 
+            exceptions.InvalidSchema, exceptions.InvalidURL):
         return None
-    except (requests.exceptions.MissingSchema): # Caso a url esteja em formato inválido.
-        return None
-    except (requests.exceptions.InvalidSchema): # Caso a url seja um mailto.
+    except Exception:
         return None
 #
 
@@ -87,6 +87,8 @@ def treatLink(url_page: String, link: String): #
 #
 
 def extract_urls(links: list[Link]):
+    if links is None:
+        return None
     urls = []
     for link in links:
         urls.append(link.url)
@@ -118,16 +120,23 @@ def get_links_sorted_by_occurrence(url: str):
     Obtém uma lista de links ordenados pela sua 
     ocorrência na página em ordem decrescente.
     '''
-    links = []
-    for link, count in sort_links_by_occurrence(extract_urls(get_links(url))):
-        links.append((link, count))
+    sorted_links = sort_links_by_occurrence(extract_urls(get_links(url)))
 
-    return links
+    if sorted_links is None:
+        return None
+    else:
+        links = []
+        for link, count in sorted_links:
+            links.append((link, count))
+        return links
 
-def sort_links_by_occurrence(links):
+def sort_links_by_occurrence(links: list[Link]):
     '''
     Ordena uma lista de links baseando-se no número de ocorrências na própria lista.
     '''
+    if links is None:
+        return None
+
     dictionary = defaultdict(int)
     
     # Contagem das ocorrências dos links
