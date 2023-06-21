@@ -85,13 +85,12 @@ def clusterize(links: list[Link]):
         titulo = link.title if link.title.strip() != '' else link.url
         topics[labels[i]].append(titulo)
 
-    return topics,all_points
+    return topics, all_points
     # Imprimindo os links por tópicos
     # for topic, links in topics.items():
     #     print(f"Tópico {topic+1}:")
     #     for link in links:
     #         print(link)
-    #     print()
 #
 def normalize_content_for_cluterize(content: str):
     soup = BeautifulSoup(content,"html.parser")
