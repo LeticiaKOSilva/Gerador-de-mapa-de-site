@@ -6,6 +6,7 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import normalize
 from sklearn.metrics import silhouette_score
 from .text_html_functions import *
+from .link_functions import get_content,treatLink
 from string import punctuation
 
 def get_best_silhouette_score(X,start_range,end_range):
@@ -28,6 +29,11 @@ def clusterize(links: list[Link]):
     # Filtrar links vazios
     links = list(filter(lambda text: text.url.strip(), links))
 
+    #obtendo o conteudo dos links
+    for link in range (0,len(links)):
+        treated_link = treatLink('',links[link].url)
+        links[link].conteudo = get_content(treated_link)
+        
     # Normalizar conteúdo dos links
     contents = [normalize_content_for_cluterize(link.conteudo) for link in links]
 
