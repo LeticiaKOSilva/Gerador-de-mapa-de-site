@@ -32,6 +32,11 @@ async def clusterize(links: list[Link]):
     # Filtrar links vazios
     links = list(filter(lambda text: text.url.strip(), links))
 
+    #obtendo o conteudo dos links
+    for link in range (0,len(links)):
+        treated_link = treatLink('',links[link].url)
+        links[link].conteudo = get_content(treated_link)
+        
     # Normalizar conteúdo dos links
     # contents = [normalize_content_for_cluterize(
     #     get_content(link.url)) for link in links]

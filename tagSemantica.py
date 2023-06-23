@@ -1,29 +1,47 @@
 import requests
 from bs4 import BeautifulSoup
-import urllib3
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+import re
 
-def extrair_links_e_textos(url):
-    # Faz a requisição HTTP para obter o conteúdo da página
-    response = requests.get(url, verify=False)  # Adicionei o parâmetro verify=False para ignorar a verificação de certificado
-    conteudo = response.content
+def extrair_links(url):
+    response = requests.get(url)
+    if response.status_code != 200:
+        print(f"Não foi possível acessar a página {url}. Status code: {response.status_code}")
+        return
 
-    # Cria um objeto BeautifulSoup para fazer a análise do HTML
-    soup = BeautifulSoup(conteudo, 'html.parser')
+    soup = BeautifulSoup(response.text, 'html.parser')
+    links = soup.find_all('a')
 
-    # Encontra todas as tags <a> que contêm links
-    tags_a = soup.find_all('a')
+    grupos_por_tag = []
 
-    # Itera sobre as tags encontradas e extrai os links e textos
-    for tag in tags_a:
-        if tag.has_attr('href'):
-            link = tag['href']
-            texto = tag.text
-            print(f"Link: {link}")
-            print(f"Texto: {texto}")
-            print()
+    for link in links:
+        href = link.get('href')
+        if href and not href.startswith('#') and re.search(r'\.com', href):
+            link_text = link.text.strip()
+            if not link_text:
+                link_text = "Sem Título"
+            parent_tag = link.parent.name
 
-# Exemplo de uso
-url = 'https://www.ifsudestemg.edu.br/barbacena'
-extrair_links_e_textos(url)
+            encontrado = False
+            for grupo in grupos_por_tag:
+                if grupo['tag'] == parent_tag:
+                    grupo['links'].append({'link': href, 'texto': link_text})
+                    encontrado = True
+                    break
 
+            if not encontrado:
+                grupos_por_tag.append({'tag': parent_tag, 'links': [{'link': href, 'texto': link_text}]})
+
+    for grupo in grupos_por_tag:
+        print(f"Tag semântica: {grupo['tag']}")
+        for link in grupo['links']:
+            print(f"Link: {link['link']}")
+            print(f"Texto do link: {link['texto']}")
+        print("-" * 50)
+
+url = "https://www.beecrowd.com.br/judge/en/login?redirect=%2Fen%2Fproblems%2Fview%2F2115"
+extrair_links(url)
+
+#Sites testados
+#https://www.youtube.com/
+#https://www.ifsudestemg.edu.br/barbacena
+#https://www.ifsudestemg.edu.br
