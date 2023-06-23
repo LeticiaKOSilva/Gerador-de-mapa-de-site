@@ -8,8 +8,9 @@ from sklearn.metrics import silhouette_score
 from . import text_html_functions as thf
 from bs4 import BeautifulSoup
 from string import punctuation
-from .link_functions import get_content
+from .link_functions import get_content,treatLink
 import asyncio
+import concurrent.futures
 import aiohttp
 
 def get_best_silhouette_score(X,start_range,end_range):
@@ -24,6 +25,10 @@ def get_best_silhouette_score(X,start_range,end_range):
         silhouette_scores.append(score)
     return range_clusters[silhouette_scores.index(max(silhouette_scores))]
 
+def get_conteudo(link):
+    treated_link = treatLink('',link.url)
+    link.conteudo = get_content(treated_link)
+
 async def clusterize(links: list[Link]):
 #   
     MIN_CLUSTERS = 2
@@ -33,9 +38,8 @@ async def clusterize(links: list[Link]):
     links = list(filter(lambda text: text.url.strip(), links))
 
     #obtendo o conteudo dos links
-    for link in range (0,len(links)):
-        treated_link = treatLink('',links[link].url)
-        links[link].conteudo = get_content(treated_link)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        executor.map(get_conteudo,links)
         
     # Normalizar conteúdo dos links
     # contents = [normalize_content_for_cluterize(
