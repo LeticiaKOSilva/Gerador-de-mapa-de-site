@@ -25,9 +25,7 @@ def get_best_silhouette_score(X,start_range,end_range):
         silhouette_scores.append(score)
     return range_clusters[silhouette_scores.index(max(silhouette_scores))]
 
-def get_conteudo(link):
-    treated_link = treatLink('',link.url)
-    link.conteudo = get_content(treated_link)
+
 
 async def clusterize(links: list[Link]):
 #   
@@ -38,17 +36,17 @@ async def clusterize(links: list[Link]):
     links = list(filter(lambda text: text.url.strip(), links))
 
     #obtendo o conteudo dos links
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        executor.map(get_conteudo,links)
+    # with concurrent.futures.ThreadPoolExecutor() as executor:
+    #     executor.map(get_conteudo,links)
         
     # Normalizar conteúdo dos links
     # contents = [normalize_content_for_cluterize(
     #     get_content(link.url)) for link in links]
-
     async with aiohttp.ClientSession() as session:
-        # Normalizar conteúdo dos links
+    #     # Normalizar conteúdo dos links
         tasks = [get_content(session, link.url) for link in links]
         contents = await asyncio.gather(*tasks)
+    contents = [normalize_content_for_cluterize(conteudo) for conteudo in contents]
 
     # Vetorizar os dados usando TF-IDF
     vectorizer = TfidfVectorizer()

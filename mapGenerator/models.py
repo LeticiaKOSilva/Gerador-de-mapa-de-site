@@ -12,7 +12,8 @@ class Link:
     def to_dict(self):
         return {
             'title': self.title,
-            'url': self.url
+            'url': self.url,
+            
         }
 
     def __str__(self):
