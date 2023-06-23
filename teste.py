@@ -1,9 +1,10 @@
 import mapGenerator.link_functions as lf
 from mapGenerator.clusterization import clusterize
-linksList = lf.get_links('barbacenaonline.com.br')
+import asyncio
+linksList = lf.get_links('https://www.ifsudestemg.edu.br/barbacena')
 
-for link in linksList:
-    print(link)
+# for link in linksList:
+#     print(link)
 
-clusterize(linksList)
+asyncio.run(clusterize(linksList))
 

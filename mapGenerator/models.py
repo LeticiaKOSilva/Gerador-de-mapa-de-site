@@ -5,10 +5,9 @@ class Link:
     """
     Representa um Link (Endereço Web).
     """
-    def __init__(self,title,url,conteudo):
+    def __init__(self, title, url):
         self.title = title
         self.url = url
-        self.conteudo = conteudo
 
     def to_dict(self):
         return {
@@ -17,5 +16,5 @@ class Link:
         }
 
     def __str__(self):
-        return f'\n{self.title} = {self.url}\n{self.conteudo}\n'
+        return f'{self.title} = {self.url}\n'
 

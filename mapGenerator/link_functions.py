@@ -4,9 +4,13 @@ from requests import exceptions
 from bs4 import BeautifulSoup
 from collections import defaultdict
 from .models import Link
-##
-#
+
 def get_links(url): #
+    '''
+    Obtém todos os links da página indicada pela url.
+    Retorna None caso a url seja inválida ou a página não exista,
+    ou uma lista com os links da página.
+    '''
     # Padroniza a URL.
     url = standardize_url(url)
 
@@ -54,7 +58,7 @@ def create_links_list(url: String, soup: BeautifulSoup): #
        
             if link_href:
                 links.append(
-                   Link(link_tag.text, treated_link, "")  #get_content(treated_link))
+                   Link(link_tag.text, treated_link)
                 )
       
     return links
@@ -93,16 +97,22 @@ def extract_urls(links: list[Link]):
     for link in links:
         urls.append(link.url)
     return urls
+#
 
-def get_content(url: String):
+async def get_content(session, url):
     """
     Recebe uma url e retorna todo o HTML contido nela 
     ou String vazia caso a requisição não seja bem sucedida
     """
-    response = create_request(url)
-    if(response is None):
+    try:
+        async with session.get(url) as response:
+            if response.status == 200:
+                return await response.text()
+            else:
+                return ""
+    except Exception:
         return ""
-    return response.text
+#
 
 def remove_url_prefix(url: str):
     """
@@ -133,6 +143,8 @@ def get_links_sorted_by_occurrence(url: str):
 def sort_links_by_occurrence(links: list[Link]):
     '''
     Ordena uma lista de links baseando-se no número de ocorrências na própria lista.
+    Retorna uma nova lista com os links ordenados 
+    ou None caso a lista fornecida seja None.
     '''
     if links is None:
         return None

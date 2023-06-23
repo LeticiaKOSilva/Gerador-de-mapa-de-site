@@ -1,12 +1,16 @@
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from .models import Link
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import normalize
 from sklearn.metrics import silhouette_score
-from .text_html_functions import *
+from . import text_html_functions as thf
+from bs4 import BeautifulSoup
 from string import punctuation
+from .link_functions import get_content
+import asyncio
+import aiohttp
 
 def get_best_silhouette_score(X,start_range,end_range):
     range_clusters = range(start_range, end_range)
@@ -20,7 +24,7 @@ def get_best_silhouette_score(X,start_range,end_range):
         silhouette_scores.append(score)
     return range_clusters[silhouette_scores.index(max(silhouette_scores))]
 
-def clusterize(links: list[Link]):
+async def clusterize(links: list[Link]):
 #   
     MIN_CLUSTERS = 2
     MAX_CLUSTERS = 12
@@ -29,7 +33,13 @@ def clusterize(links: list[Link]):
     links = list(filter(lambda text: text.url.strip(), links))
 
     # Normalizar conteúdo dos links
-    contents = [normalize_content_for_cluterize(link.conteudo) for link in links]
+    # contents = [normalize_content_for_cluterize(
+    #     get_content(link.url)) for link in links]
+
+    async with aiohttp.ClientSession() as session:
+        # Normalizar conteúdo dos links
+        tasks = [get_content(session, link.url) for link in links]
+        contents = await asyncio.gather(*tasks)
 
     # Vetorizar os dados usando TF-IDF
     vectorizer = TfidfVectorizer()
@@ -61,23 +71,25 @@ def clusterize(links: list[Link]):
 
     # Obter as coordenadas dos pontos dos clusters
     cluster_points = {i: [] for i in range(best_num_clusters)}
+    points = []
     for i, point in enumerate(reduced_X):
         cluster_points[labels[i]].append(point)
+        points.append(point)
 
     # Plotar os pontos dos clusters
-    colors = colors = ['r', 'g', 'b', 'c', 'm', 'y', 'k', 'purple', 'orange', 'gray', 'pink', 'brown', 'teal', 'navy', 'olive']
-    for cluster_label, points in cluster_points.items():
-        x = [point[0] for point in points]
-        y = [point[1] for point in points]
-        plt.scatter(x, y, c=colors[cluster_label], label=f'Cluster {cluster_label+1}')
+    # colors = colors = ['r', 'g', 'b', 'c', 'm', 'y', 'k', 'purple',
+    #                    'orange', 'gray', 'pink', 'brown', 'teal', 'navy', 'olive']
+    # for cluster_label, points in cluster_points.items():
+    #     x = [point[0] for point in points]
+    #     y = [point[1] for point in points]
+    #     plt.scatter(x, y, c=colors[cluster_label], label=f'Cluster {cluster_label+1}')
 
-    all_points = [x,y]
-
+    # # all_points = [x,y]
     
-    plt.xlabel('Componente Principal 1')
-    plt.ylabel('Componente Principal 2')
-    plt.title('Clusters no Plano Cartesiano')
-    plt.show()
+    # plt.xlabel('Componente Principal 1')
+    # plt.ylabel('Componente Principal 2')
+    # plt.title('Clusters no Plano Cartesiano')
+    # plt.show()
 
     # Retornar os tópicos dos clusters
     topics = {i: [] for i in range(best_num_clusters)}
@@ -85,17 +97,18 @@ def clusterize(links: list[Link]):
         titulo = link.title if link.title.strip() != '' else link.url
         topics[labels[i]].append(titulo)
 
-    return topics, all_points
+    return topics, points
     # Imprimindo os links por tópicos
     # for topic, links in topics.items():
     #     print(f"Tópico {topic+1}:")
     #     for link in links:
     #         print(link)
 #
+
 def normalize_content_for_cluterize(content: str):
     soup = BeautifulSoup(content,"html.parser")
 
-    title_tags = get_all_tag_names(soup)
+    title_tags = thf.get_all_tag_names(soup)
     
     #print(title_tags)
     normalized_text = " ".join(title_tags)

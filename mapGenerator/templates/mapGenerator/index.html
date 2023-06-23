@@ -35,16 +35,16 @@
                     </div>
                 </div>
             </section>
-            
+
             <section id="site-map-results" class="hide mt-3 mb-5">
                 <hr>
                 <div class="site-map">
                     <p class="h3 text-dark text-center text-decoration-underline ">Mapa do Site</p>
                     <div id="links-container" class="overflow-scroll border border-dark-subtle max-height-container">
-                        
+
                     </div>
                 </div>
-                
+
                 <hr>
                 <div class="site-map-ordened">
                     <p class="h3 text-dark text-center text-decoration-underline ">Agrupamentos</p>
@@ -65,7 +65,8 @@
                             <label class="btn btn-outline-primary" for="map-btn-4">Relevância</label>
                         </div>
                     </div>
-                    <div id="group-container" class="overflow-scroll border border-dark-subtle hide max-height-container">
+                    <div id="group-container"
+                        class="overflow-scroll border border-dark-subtle hide max-height-container">
 
                     </div>
                 </div>
@@ -77,13 +78,13 @@
 
     {% include '_footer.html' %}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script>
 
         const urlInput = document.querySelector("#url");
         const siteMapButton = document.querySelector("#siteMapButton");
         const loader = $('<div id="loader" class="hide container-margin"><p class="h3 text-primary text-center"> Carregando<i class="fas fa-spinner fa-spin"></i></p></div>');
 
-        var selected_map_group = "#map-btn-1";
         var url_str;
 
         /**
@@ -98,6 +99,26 @@
         siteMapButton.addEventListener("click", (e) => {
             e.preventDefault();
             site_map_request();
+        });
+
+        document.querySelector("#map-btn-1").addEventListener("click", (e) => {
+            e.preventDefault();
+            occurrence_order_request();
+        });
+
+        document.querySelector("#map-btn-2").addEventListener("click", (e) => {
+            e.preventDefault();
+            // Função das tags semânticas.
+        });
+
+        document.querySelector("#map-btn-3").addEventListener("click", (e) => {
+            e.preventDefault();
+            contextual_similarity_request();
+        });
+
+        document.querySelector("#map-btn-4").addEventListener("click", (e) => {
+            e.preventDefault();
+            // Page rank.
         });
 
         function site_map_request() {
@@ -150,8 +171,8 @@
 
                     // Crie uma coluna para o título do link
                     var titleCell = row.insertCell();
-                    titleCell.classList.add('text-truncate', 'border', 'border-dark-subtle'); 
-                    titleCell.style.maxWidth = "150px"; 
+                    titleCell.classList.add('text-truncate', 'border', 'border-dark-subtle');
+                    titleCell.style.maxWidth = "150px";
                     titleCell.appendChild(document.createTextNode(link.title));
 
                     // Crie uma coluna para o link
@@ -160,8 +181,8 @@
                     linkUrl.textContent = link.url;
                     linkUrl.target = "_blank";
                     var linkCell = row.insertCell();
-                    linkCell.classList.add('text-truncate', 'border', 'border-dark-subtle'); 
-                    linkCell.style.maxWidth = "300px"; 
+                    linkCell.classList.add('text-truncate', 'border', 'border-dark-subtle');
+                    linkCell.style.maxWidth = "300px";
                     linkCell.appendChild(linkUrl);
                 });
 
@@ -188,7 +209,6 @@
 
         function show_occurrence_order_data(request) {
             $('#group-container').next().remove();
-            enable_element_by_id(selected_map_group);
             if (request.valid) {
                 // Obtenha uma referência à <div> onde deseja inserir a tabela
                 var divContainer = document.querySelector('#group-container');
@@ -243,20 +263,114 @@
                 show_url_alert();
             }
             enable_map_buttons();
-            selected_map_group = "#map-btn-1";
-            disable_element_by_id(selected_map_group);
+            check_button("#map-btn-1");
         }
 
 
         // Tags Semânticas 
-    
+
         // Semelhança Contextual
-        // function contextual_similarity_request() {
-        //     $('#group-container').after(loader.html());
-        //     disable_map_buttons();
-        //     hide_tag_by_id("#group-container");
-        //     create_request("{% url 'mapGenerator:occurrence' %}", { url: url_str }, show_contextual_similarity_data);
-        // }
+        function contextual_similarity_request() {
+            $('#group-container').after(loader.html());
+            disable_map_buttons();
+            hide_tag_by_id("#group-container");
+            create_request("{% url 'mapGenerator:contextual-similarity' %}", { url: url_str }, show_contextual_similarity_data);
+        }
+
+        function show_contextual_similarity_data(request) {
+            $('#group-container').next().remove();
+            if (request.valid) {
+                // Obtenha uma referência à <div> onde deseja inserir a tabela
+                var divContainer = document.querySelector('#group-container');
+                $('#group-container').next().remove();
+                show_tag_by_id("#group-container");
+
+                // Crie a tabela com as classes Bootstrap
+                var table = document.createElement('table');
+                table.classList.add('table', 'table-striped', 'border', 'border-dark-subtle');
+
+                // Cria o corpo da tabela
+                var tbody = document.createElement('tbody');
+
+                // Cria um objeto para rastrear os tópicos já exibidos
+                var displayedTopics = {};
+
+                // Percorre o clusterData e cria as linhas da tabela
+                request.cluster.forEach(function (item) {
+                    var topic = item.topic;
+                    var link = item.link;
+
+                    // Verifica se o tópico já foi exibido, se não, cria uma nova linha para o tópico
+                    if (!displayedTopics[topic]) {
+                        var row = document.createElement('tr');
+                        var topicCell = document.createElement('td');
+                        topicCell.classList.add("text-primary", "text-center", "fw-bold")
+                        topicCell.textContent = "Tópico " + (topic + 1);
+                        row.appendChild(topicCell);
+                        tbody.appendChild(row);
+                        displayedTopics[topic] = true;
+                    }
+
+                    // Cria uma nova linha para o link dentro do tópico
+                    var linkRow = document.createElement('tr');
+                    var linkCell = document.createElement('td');
+                    linkCell.textContent = link;
+                    linkRow.appendChild(linkCell);
+                    tbody.appendChild(linkRow);
+                });
+
+                // Adiciona o corpo da tabela à tabela principal
+                table.appendChild(tbody);
+
+                // Adicione a tabela à <div> container
+                divContainer.innerHTML = "";
+                divContainer.appendChild(table);
+
+                // Extrai os valores de 'x' e 'y' dos dados
+                var x_values = request.points.map(function (point) {
+                    return point.x;
+                });
+
+                var y_values = request.points.map(function (point) {
+                    return point.y;
+                });
+
+                // Cria os dados do scatter plot
+                var trace = {
+                    x: x_values,
+                    y: y_values,
+                    mode: 'markers',
+                    type: 'scatter'
+                };
+
+                // Configurações do layout
+                var layout = {
+                    title: 'Scatter Plot',
+                    xaxis: {
+                        title: 'Eixo X'
+                    },
+                    yaxis: {
+                        title: 'Eixo Y'
+                    }
+                };
+
+                // Cria o array de dados do gráfico
+                var data = [trace];
+
+                // Renderiza o scatter plot na div com id 'scatterPlot'
+                var scatterPlot = document.createElement('div');
+                scatterPlot.setAttribute("id", "scatterPlot")
+                // scatterPlot.classList.add('border', 'border-dark-subtle')
+                divContainer.insertAdjacentElement('afterend', scatterPlot);
+                Plotly.newPlot("scatterPlot", data, layout);
+            } else {
+                hide_site_map_results()
+                show_url_alert();
+            }
+            enable_map_buttons();
+            check_button("#map-btn-3");
+        }
+
 
         // Relevância
 
@@ -283,6 +397,11 @@
                 }
             });
 
+        }
+
+        function check_button(button_id) {
+            disable_element_by_id(button_id);
+            document.querySelector(button_id).checked = true;
         }
 
         function disable_map_buttons() {

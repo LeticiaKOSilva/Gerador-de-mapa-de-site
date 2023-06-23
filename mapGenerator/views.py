@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from . import link_functions as lf
 
-# from .clusterization import clusterize
+from .clusterization import clusterize
 from django.http import JsonResponse
 
 # import xml.etree.ElementTree as ET
@@ -57,22 +57,27 @@ def occurrence(request):
     return JsonResponse({"error": "Invalid request"}, status=400)
 
 
-def contextual_similarity(request):
+async def contextual_similarity(request):
     if request.method == "POST":
-        # json_data = json.loads(request.body)
+        json_data = json.loads(request.body)
 
-        # url = json_data.get("url")
+        url = json_data.get("url")
 
-        # links = lf.get_links_sorted_by_occurrence(url)
+        
+        links = lf.get_links(url)
+        if links is not None:
+            topics, points = await clusterize(links)
 
-        # if links is not None:
-        #     links_data = [{"url": link[0], "count": link[1]} for link in links]
-        #     valid = True
-        # else:
-        #     links_data = None
-        #     valid = False
+            cluster_data = [{"topic": topic, "link": link} for topic, links 
+                            in topics.items() for link in links]
+            point_data = [{"x": point[0], "y": point[1]} for point in points]
+            valid = True
+        else:
+            cluster_data = None
+            point_data = None
+            valid = False
 
-        response_data = {"valid": True} # {"valid": valid, "links": links_data}
+        response_data = {"valid": valid, "cluster": cluster_data, "points": point_data}
 
         return JsonResponse(response_data)
 
