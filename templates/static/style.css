@@ -35,6 +35,12 @@ thead *, .row-title {
     height: 3vw;
 }
 
+.h6{
+    font-size: x-large;
+    text-align: justify;
+    letter-spacing: -1px;
+}
+
 .dropdown-item:hover,
 .detail-link:hover {
     background-color: #0d6efd !important;
@@ -109,6 +115,10 @@ thead *, .row-title {
 
 .hide {
     display: none;
+}
+
+.brightness-0 {
+    filter: brightness(0);
 }
 
 #div-descover {
