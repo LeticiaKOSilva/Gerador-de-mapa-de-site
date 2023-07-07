@@ -7,11 +7,11 @@ Acesse o Mapa do Site em seu navegador.
 
 Insira o URL do site que você deseja mapear no campo apropriado.
 
-![image](https://github.com/LeticiaKOSilva/Gerador-de-mapa-de-site/assets/112981494/60e2ffb2-9577-458f-939f-0fbee03ce8cc)
+![image](https://github.com/LeticiaKOSilva/Gerador-de-mapa-de-site/assets/112981494/07a637a9-b2a0-406e-afab-f5f36c427cc3)
 
 Clique no botão "Gerar Mapa do Site" para iniciar o processo de varredura e geração do mapa do site.
 
-![image](https://github.com/LeticiaKOSilva/Gerador-de-mapa-de-site/assets/112981494/df523597-efd2-4198-bf21-09070a01f7ac)
+![image](https://github.com/LeticiaKOSilva/Gerador-de-mapa-de-site/assets/112981494/b6674044-b70c-42d6-a86f-6ff5dcb238fa)
 
 Aguarde o processamento, pois pode levar algum tempo dependendo do tamanho do site.
 
@@ -27,6 +27,9 @@ Aqui está um exemplo de como utilizar o Mapa do Site:
 3. Clique no botão "Gerar Mapa do Site".
 
 4. Aguarde o processamento e visualize o mapa do site gerado.
+
+## Bilbliotecas
+pip instal -r libs.txt
 
 ## Colaboradores
 <a class="dropdown-item footer-github-link" href="https://github.com/GabrielBarbosaAfo"
